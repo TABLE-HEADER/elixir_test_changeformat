@@ -39,4 +39,16 @@ defmodule ElixirTestChangeformat do
     encoded_data = JSON.encode!(map)
     File.write(filename, encoded_data)
   end
+
+  def map_to_json2(filename, map) do
+    file = File.open!(filename, [:write])
+    original = Process.group_leader()
+    Process.group_leader(self(), file)
+    IO.inspect(map)
+    Process.group_leader(self(), original)
+    data = File.read!(filename)
+    |> String.replace("%", "")
+    |> String.replace(~r/([ {])(?!")([a-z0-9_]*?):/, "\\1\"\\2\":")
+    File.write(filename, data)
+  end
 end
